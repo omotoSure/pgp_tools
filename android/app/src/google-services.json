@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "633291686718",
+    "project_id": "pgp-app-20260",
+    "storage_bucket": "pgp-app-20260.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:633291686718:android:552af26a29b605e12fe26f",
+        "android_client_info": {
+          "package_name": "com.example.pgp_encryption"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "633291686718-acf93821d73h951e6jo6s914efgp394r.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDmVoglPJ74Vq0OyJZvtMoisE3MaFJCuyE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "633291686718-acf93821d73h951e6jo6s914efgp394r.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -4,7 +4,7 @@ class LoginWidget extends StatefulWidget {
   LoginWidget({Key? key, required this.submitFn, required this.isLoading})
       : super(key: key);
 
-  bool isLoading = true;
+  final bool isLoading;
   final void Function(String email, String username, String password,
       bool isLogin, BuildContext context) submitFn;
 
@@ -20,13 +20,12 @@ class _LoginWidgetState extends State<LoginWidget> {
   String _userPassword = '';
   bool _isLogin = true;
 
-
   void _trySubmit() {
     final isValid = _formKey.currentState!.validate();
 
     FocusScope.of(context).unfocus();
 
-    if (isValid != null ) {
+    if (isValid != null) {
       _formKey.currentState!.save();
       widget.submitFn(_userEmail.trim(), _userName.trim(), _userPassword.trim(),
           _isLogin, context);

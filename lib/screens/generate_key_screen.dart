@@ -8,16 +8,15 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import '/models/shared_preferences.dart';
 
 class GenerateKeyScreen extends StatefulWidget {
-  GenerateKeyScreen({Key? key}) : super(key: key);
+  const GenerateKeyScreen({Key? key}) : super(key: key);
 
   @override
   State<GenerateKeyScreen> createState() => _GenerateKeyScreenState();
 }
 
 class _GenerateKeyScreenState extends State<GenerateKeyScreen> {
-  TextEditingController privateController = TextEditingController();
-
-  TextEditingController publicController = TextEditingController();
+  late TextEditingController privateController;
+  late TextEditingController publicController;
 
   String userName = '';
 
@@ -32,6 +31,20 @@ class _GenerateKeyScreenState extends State<GenerateKeyScreen> {
   var _isLoading = false;
 
   var firebaseUser = FirebaseAuth.instance.currentUser;
+
+  @override
+  void initState() {
+    publicController = TextEditingController();
+    privateController = TextEditingController();
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    publicController.dispose();
+    privateController.dispose();
+    super.dispose();
+  }
 
   saveKeypairToSP() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -93,7 +106,7 @@ class _GenerateKeyScreenState extends State<GenerateKeyScreen> {
               if (!_isLoading)
                 ButtonWidget(
                     textName: 'Generate',
-                    onPress: () {
+                    onPress: () async {
                       try {
                         setState(() {
                           _isLoading = true;

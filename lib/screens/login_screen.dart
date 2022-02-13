@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 import '/widgets/login_widget.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:openpgp/openpgp.dart';
+// import 'package:openpgp/openpgp.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -18,7 +18,6 @@ class _LoginScreenState extends State<LoginScreen> {
   final _auth = FirebaseAuth.instance;
 
   var _isLoading = false;
-
 
   void _submitLoginWidget(String email, String username, String password,
       bool isLogin, BuildContext ctx) async {
@@ -39,7 +38,7 @@ class _LoginScreenState extends State<LoginScreen> {
             .set({
           'username': username,
           'email': email,
-          'passphrase' : password,
+          'passphrase': password,
         });
       }
     } on PlatformException catch (err) {
@@ -56,8 +55,48 @@ class _LoginScreenState extends State<LoginScreen> {
       setState(() {
         _isLoading = false;
       });
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'user-not-found') {
+        ScaffoldMessenger.of(ctx).showSnackBar(
+          SnackBar(
+            content: const Text('User Not Found!'),
+            backgroundColor: Theme.of(ctx).errorColor,
+          ),
+        );
+      } else if (e.code == 'wrong-password') {
+        ScaffoldMessenger.of(ctx).showSnackBar(
+          SnackBar(
+            content: const Text('Invalid Password'),
+            backgroundColor: Theme.of(ctx).errorColor,
+          ),
+        );
+      } else if (e.code == 'weak-password') {
+        ScaffoldMessenger.of(ctx).showSnackBar(
+          SnackBar(
+            content: const Text('Weak Password'),
+            backgroundColor: Theme.of(ctx).errorColor,
+          ),
+        );
+      } else if (e.code == 'email-already-in-use') {
+        ScaffoldMessenger.of(ctx).showSnackBar(
+          SnackBar(
+            content: const Text('Email already in use'),
+            backgroundColor: Theme.of(ctx).errorColor,
+          ),
+        );
+      } else if (e.code == 'invalid-email') {
+        ScaffoldMessenger.of(ctx).showSnackBar(
+          SnackBar(
+            content: const Text('Invalid Email'),
+            backgroundColor: Theme.of(ctx).errorColor,
+          ),
+        );
+      }
+      setState(() {
+        _isLoading = false;
+      });
     } catch (err) {
-      print(err);
+      // print(err);
       setState(() {
         _isLoading = false;
       });

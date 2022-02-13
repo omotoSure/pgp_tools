@@ -14,14 +14,34 @@ class DecryptScreen extends StatefulWidget {
 }
 
 class _DecryptScreenState extends State<DecryptScreen> {
-  TextEditingController passphraseController = TextEditingController();
-  TextEditingController privateKeyController = TextEditingController();
-  TextEditingController encryptedTextController = TextEditingController();
-  TextEditingController decryptedTextController = TextEditingController();
+  late TextEditingController passphraseController;
+  late TextEditingController privateKeyController;
+  late TextEditingController encryptedTextController;
+  late TextEditingController decryptedTextController;
   String decryptionResult = '';
   String passphrase = '';
 
   var firebaseUser = FirebaseAuth.instance.currentUser;
+
+  @override
+  void initState() {
+    passphraseController = TextEditingController();
+    privateKeyController = TextEditingController();
+    encryptedTextController = TextEditingController();
+    decryptedTextController = TextEditingController();
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    passphraseController.dispose();
+    privateKeyController.dispose();
+    encryptedTextController.dispose();
+    decryptedTextController.dispose();
+
+    getPrivate();
+    super.dispose();
+  }
 
   void getCurrentUser() async {
     await FirebaseFirestore.instance
@@ -34,16 +54,10 @@ class _DecryptScreenState extends State<DecryptScreen> {
 
     // here you write the codes to input the data into firestore
   }
-  void getPrivate() async {
-    privateKeyController.text = await
-    UserSharedPreference.getPrivateKey() ?? '';
-  }
 
-  @override
-  void initState() {
-    getPrivate();
-    // TODO: implement initState
-    super.initState();
+  void getPrivate() async {
+    privateKeyController.text =
+        await UserSharedPreference.getPrivateKey() ?? '';
   }
 
   @override
@@ -54,21 +68,6 @@ class _DecryptScreenState extends State<DecryptScreen> {
           padding: const EdgeInsets.all(20),
           child: Column(
             children: [
-              // TextField(
-              //   obscureText: true,
-              //   controller: passphraseController,
-              //   decoration: InputDecoration(
-              //     hintText: 'Enter Passphrase',
-              //     suffixIcon: IconButton(
-              //         icon: const Icon(Icons.clear),
-              //         onPressed: () {
-              //           passphraseController.clear();
-              //         }),
-              //   ),
-              // ),
-              // const SizedBox(
-              //   height: 20,
-              // ),
               TextField(
                 minLines: 3,
                 maxLines: 3,
@@ -88,9 +87,8 @@ class _DecryptScreenState extends State<DecryptScreen> {
                       IconButton(
                         icon: const Icon(Icons.paste),
                         onPressed: () async {
-
-                          privateKeyController.text = await
-                          UserSharedPreference.getPrivateKey() ?? '';
+                          privateKeyController.text =
+                              await UserSharedPreference.getPrivateKey() ?? '';
                         },
                       ),
                     ],
@@ -122,10 +120,8 @@ class _DecryptScreenState extends State<DecryptScreen> {
               ButtonWidget(
                   onPress: () async {
                     getCurrentUser();
-                    await OpenPGP.decrypt(
-                            encryptedTextController.text,
-                            privateKeyController.text,
-                            passphrase)
+                    await OpenPGP.decrypt(encryptedTextController.text,
+                            privateKeyController.text, passphrase)
                         .then((value) {
                       decryptionResult = value;
                       decryptedTextController.text = decryptionResult;

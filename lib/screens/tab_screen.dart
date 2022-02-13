@@ -4,6 +4,10 @@ import '/screens/encrypt_screen.dart';
 import '/screens/generate_key_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
+import 'login_screen.dart';
+
+enum MenuAction { logout }
+
 class TabScreen extends StatefulWidget {
   const TabScreen({Key? key}) : super(key: key);
 
@@ -19,7 +23,7 @@ class _TabScreenState extends State<TabScreen> {
   void initState() {
     _pages = [
       {
-        'page': GenerateKeyScreen(),
+        'page': const GenerateKeyScreen(),
         'title': 'Generate Keypair',
       },
       {
@@ -44,33 +48,27 @@ class _TabScreenState extends State<TabScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title:Text(_pages![_selectedPageIndex]['title'] as String),
+        title: Text(_pages![_selectedPageIndex]['title'] as String),
         actions: [
-          DropdownButton(
-            items: [
-              DropdownMenuItem(
-                child: Container(
-                  child: Row(
-                    children: const [
-                      Icon(Icons.exit_to_app),
-                      SizedBox(
-                        width: 8,
-                      ),
-                      Text('Logout')
-                    ],
-                  ),
-                ),
-                value: 'logout',
-              ),
-            ],
-            icon: Icon(
-              Icons.more_vert,
-              color: Theme.of(context).primaryIconTheme.color,
-            ),
-            onChanged: (itemIdentifier) {
-              if (itemIdentifier == 'logout') {
-                FirebaseAuth.instance.signOut();
+          PopupMenuButton<MenuAction>(
+            onSelected: (value) async {
+              switch (value) {
+                case MenuAction.logout:
+                  final shouldLogout = await showLogoutDialog(context);
+                  if (shouldLogout == true) {
+                    await FirebaseAuth.instance.signOut();
+                    Navigator.of(context).pushNamedAndRemoveUntil(
+                        LoginScreen.routeName, (_) => false);
+                  }
               }
+            },
+            itemBuilder: (context) {
+              return const [
+                PopupMenuItem<MenuAction>(
+                  value: MenuAction.logout,
+                  child: Text('Log out'),
+                ),
+              ];
             },
           ),
         ],
@@ -90,7 +88,7 @@ class _TabScreenState extends State<TabScreen> {
         items: [
           BottomNavigationBarItem(
             backgroundColor: Theme.of(context).colorScheme.primary,
-            icon: Icon(Icons.category),
+            icon: const Icon(Icons.category),
             label: 'Generate',
           ),
           BottomNavigationBarItem(
@@ -106,5 +104,29 @@ class _TabScreenState extends State<TabScreen> {
         ],
       ),
     );
+  }
+
+  Future<bool> showLogoutDialog(BuildContext context) {
+    return showDialog<bool>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Log out'),
+          content: const Text('Are you sure you want to logout?'),
+          actions: [
+            TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop(false);
+                },
+                child: const Text('Cancel')),
+            TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop(true);
+                },
+                child: const Text('Log out'))
+          ],
+        );
+      },
+    ).then((value) => value ?? false);
   }
 }

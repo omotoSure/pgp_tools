@@ -15,10 +15,26 @@ class PgpScreen extends StatefulWidget {
 }
 
 class _PgpScreenState extends State<PgpScreen> {
-  TextEditingController publicController = TextEditingController();
-  TextEditingController textController = TextEditingController();
-  TextEditingController encryptedController = TextEditingController();
+  late TextEditingController publicController;
+  late TextEditingController textController;
+  late TextEditingController encryptedController;
   String encryptionResult = '';
+
+  @override
+  void initState() {
+    publicController = TextEditingController();
+    textController = TextEditingController();
+    encryptedController = TextEditingController();
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    publicController.dispose();
+    textController.dispose();
+    encryptedController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -46,9 +62,9 @@ class _PgpScreenState extends State<PgpScreen> {
                       ),
                       IconButton(
                           icon: const Icon(Icons.paste),
-                          onPressed: () async{
-                            publicController.text = await
-                                UserSharedPreference.getPublicKey() ?? '';
+                          onPressed: () async {
+                            publicController.text =
+                                await UserSharedPreference.getPublicKey() ?? '';
                           }),
                     ],
                   ),
